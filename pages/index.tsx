@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { fetcher } from '../client/util';
 
 export default withRedux(withAuth(function() {
-  const { data, error, isValidating, revalidate } = useSWR('/api/apps/list', fetcher);
+  const { data, error, isValidating, revalidate } = useSWR('/api/apps/list', fetcher, { refreshInterval: 8000 });
   const canUpdate = !isValidating && (data || error);
 
   return <div>
