@@ -5,8 +5,8 @@ import Router from 'next/router';
 import axios from 'axios';
 import { Input } from '../client/components/input';
 import { Navbar } from '../client/components/navbar';
-import { withRedux } from '../client/middleware/redux';
-import { withAuth } from '../client/middleware/auth'; 
+import { withRedux } from '../client/middlewares/redux';
+import { withAuth } from '../client/middlewares/auth'; 
 import * as validate from '../shared/validation';
 
 const onLogin = async (username, password) => {

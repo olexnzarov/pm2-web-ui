@@ -22,7 +22,7 @@
 
 > What you can do?
 
-* [ ] Monitoring - see up-to-date information about your applications (their statuses, RAM and CPU usage, etc.).
+* [x] Monitoring - see up-to-date information about your applications (their statuses, RAM and CPU usage, etc.).
 * [ ] Management - restart, stop or delete an existing application.
 * [ ] Deployment - start a new Node.js application using the PM2.
 * [ ] Interaction - send data or signals to the running applications.

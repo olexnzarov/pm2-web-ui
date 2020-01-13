@@ -21,6 +21,7 @@
     "bulma": "^0.8.0",
     "connect-mongo": "^3.2.0",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
     "mongoose": "^5.8.3",
     "next": "^9.1.6",
     "next-session": "^2.1.1",
