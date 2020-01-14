@@ -1,18 +1,9 @@
 import moment from 'moment';
 import Router from 'next/router';
 
-export function TableHead({ columns }) {
+function TableHead({ columns }) {
   const elements = columns.map(col => <th key={col}>{col}</th>);
   return <thead><tr>{elements}</tr></thead>;
-};
-
-const statusIcon = {
-  online: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-play has-text-success"></i></span>,
-  stopping: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop-circle"></i></span>,
-  stopped: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop"></i></span>,
-  launching: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-rocket has-text-primary"></i></span>,
-  errored: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-exclamation-triangle has-text-danger"></i></span>,
-  ['one-launch-status']: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-asterisk"></i></span>,
 };
 
 function TableCell({ children, ...props }) {
@@ -38,10 +29,10 @@ const getTextContent = (children) => {
   return text;
 };
 
-const functionalCell = (pid) => {
+const functionalCell = (id) => {
   return function({ children, ...props }) {
     const attr = {
-      onClick: () => Router.push(`/app/${pid}`),
+      onClick: () => Router.push(`/apps/[id]`, `/apps/${id}`),
       onContextMenu: (e) => {
         const textToCopy = getTextContent(children);
         e.preventDefault();
@@ -54,15 +45,24 @@ const functionalCell = (pid) => {
   };
 };
 
+const statusIcon = {
+  online: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-play has-text-success"></i></span>,
+  stopping: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop-circle"></i></span>,
+  stopped: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop"></i></span>,
+  launching: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-rocket has-text-primary"></i></span>,
+  errored: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-exclamation-triangle has-text-danger"></i></span>,
+  ['one-launch-status']: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-asterisk"></i></span>,
+};
+
 const bytesInMb = 1024**2;
-export function ApplicationRow({ app, isLast = false }) {
+function ApplicationRow({ app, isLast = false }) {
   const { pid, name, monit, pm2_env } = app;
   const { memory, cpu } = monit;
   const { pm_id: id, restart_time: restarts, unstable_restarts: unstableRestarts, pm_uptime: uptime, status, exec_mode: execMode } = pm2_env;
   const icon = statusIcon[status] ? statusIcon[status]() : null;
 
   const mup = moment(uptime);
-  const Td = functionalCell(id);
+  const Td = functionalCell(name);
   const details = `${name}\npid: ${pid}\nmode: ${execMode}`;
   return <tr>
     <Td>{id}</Td>
@@ -110,7 +110,7 @@ function ErrorDisplay({ title, text, onRemove = null, ...props }) {
   </article>;
 }
 
-export function ApplicationsTable(props) {
+export default function(props) {
   const { apps = [], isLoading = false, error = null } = props;
 
   if (error) {

@@ -1,4 +1,4 @@
-import { ApplicationsTable } from '../client/components/table';
+import ApplicationsTable from '../client/components/ApplicationsTable';
 import { Navbar } from '../client/components/navbar';
 import { withRedux } from '../client/middlewares/redux';
 import { withAuth } from '../client/middlewares/auth'; 

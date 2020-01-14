@@ -1,6 +1,4 @@
-import Link from 'next/link';
-
-export function Input(props) {
+export default function(props) {
   const { name, icon, invalid, invalidMessage, ...rest } = props;
   return <div className="field">
     <label className="label">{name}</label>
@@ -24,13 +22,4 @@ export function Input(props) {
       <p className="help is-danger">{invalidMessage}</p>
     }
   </div>;
-};
-
-export function LoginButton(props) {
-  const { logout, isLoading } = props;
-  return <Link href={logout ? '/logout' : '/login'}>
-    <a className={`button is-link ${isLoading ? 'is-loading is-disabled' : ''}`}>
-      <strong>{logout ? 'Log out' : 'Log in'}</strong>
-    </a>
-  </Link>;
 };

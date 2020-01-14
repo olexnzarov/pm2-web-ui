@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { LoginButton } from './input';
+import LoginButton from './LoginButton';
 import { IGlobalState } from '../store';
 import Link from 'next/link';
 
