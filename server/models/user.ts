@@ -8,9 +8,11 @@ export interface IUser {
 };
 
 export enum UserAppRight {
-  OWNER = 'owner',
-  ADMIN = 'admin',
-  VIEWER = 'viewer',
+  NONE = 0,
+  VIEW = 0x1,
+  MANAGE = 0x2,
+  DELETE = 0x4,
+  INTERACT = 0x8,
 };
 
 export interface IAppOwnership {
@@ -19,12 +21,6 @@ export interface IAppOwnership {
 };
 
 export class AppOwnership implements IAppOwnership {
-  private static rightsHierarchy = {
-    [UserAppRight.OWNER]: { [UserAppRight.OWNER]: true },
-    [UserAppRight.ADMIN]: { [UserAppRight.OWNER]: true, [UserAppRight.ADMIN]: true },
-    [UserAppRight.VIEWER]: { [UserAppRight.OWNER]: true, [UserAppRight.ADMIN]: true, [UserAppRight.VIEWER]: true },
-  };
-
   @prop({ required: true })
   public id: string;
 
@@ -34,7 +30,7 @@ export class AppOwnership implements IAppOwnership {
   @prop()
   public isAdmin?: boolean;
 
-  public hasRight(right: UserAppRight) { return AppOwnership.rightsHierarchy[right][this.right] === true; }
+  public hasRight(right: UserAppRight) { return (this.right & right) === right; }
 };
 
 export class User implements IUser {
@@ -56,6 +52,7 @@ export class User implements IUser {
     };
   }
 
+  // todo: proper hashing
   public static hash(input: string) { return input; }
 };
 
