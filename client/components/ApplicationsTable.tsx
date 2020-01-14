@@ -1,5 +1,7 @@
 import moment from 'moment';
 import Router from 'next/router';
+import ErrorDisplay from './ErrorDisplay';
+import { IApp } from '../../shared/pm2'; 
 
 function TableHead({ columns }) {
   const elements = columns.map(col => <th key={col}>{col}</th>);
@@ -55,18 +57,18 @@ const statusIcon = {
 };
 
 const bytesInMb = 1024**2;
-function ApplicationRow({ app, isLast = false }) {
-  const { pid, name, monit, pm2_env } = app;
+function ApplicationRow({ app, isFirst = false }) {
+  const { pid, pm_id: id, name, monit, pm2_env } = app as IApp;
   const { memory, cpu } = monit;
-  const { pm_id: id, restart_time: restarts, unstable_restarts: unstableRestarts, pm_uptime: uptime, status, exec_mode: execMode } = pm2_env;
+  const { restart_time: restarts, unstable_restarts: unstableRestarts, pm_uptime: uptime, status, exec_mode: execMode } = pm2_env;
   const icon = statusIcon[status] ? statusIcon[status]() : null;
 
   const mup = moment(uptime);
   const Td = functionalCell(name);
-  const details = `${name}\npid: ${pid}\nmode: ${execMode}`;
+  const details = `${name}\npid: ${pid}`;
   return <tr>
     <Td>{id}</Td>
-    <Td className={`has-tooltip-${isLast ? 'top' : 'right'}`} data-tooltip={details}>{name}</Td>
+    <Td className={`has-tooltip-${isFirst ? 'right' : 'top'}`} data-tooltip={details}>{name}</Td>
     <Td>{icon}{status}</Td>
     <Td data-tooltip={mup.calendar()}>{mup.fromNow(true)}</Td>
     <Td>
@@ -95,21 +97,6 @@ function EmptyTable() {
   </div>;
 }
 
-function ErrorDisplay({ title, text, onRemove = null, ...props }) {
-  return <article className="message is-danger" {...props}>
-    <div className="message-header">
-      <p>{title}</p>
-      {
-        onRemove &&
-        <button className="delete" aria-label="delete" onClick={() => onRemove()}></button>
-      }
-    </div>
-    <div className="message-body">
-      {text}
-    </div>
-  </article>;
-}
-
 export default function(props) {
   const { apps = [], isLoading = false, error = null } = props;
 
@@ -123,7 +110,7 @@ export default function(props) {
   if (isLoading) { return <LoadingBar />; }
   if (apps.length === 0) { return <EmptyTable />; }
 
-  const rows = apps.map((app, index) => <ApplicationRow key={`app_row_${app.pid}`} app={app} isLast={index === apps.length - 1}/>);
+  const rows = apps.map((app, index) => <ApplicationRow key={`app_row_${app.pid}`} app={app} isFirst={index === 0}/>);
   return <div className="table-container" style={{ width: '100%' }}>
     <table className="table is-fullwidth is-bordered is-striped is-hoverable">
       <TableHead columns={['id', 'name', 'status', 'uptime', 'restarts', 'memory', 'cpu']} />

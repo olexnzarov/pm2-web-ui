@@ -1,5 +1,5 @@
 import { IApiRequest, IApiResponse } from '../api';
-import { UserModel } from '../models/user';
+import { UserModel, User } from '../models/user';
 
 interface IAuthOptions {
   required?: boolean;
@@ -16,7 +16,7 @@ export default (options: IAuthOptions = {}) => (fn) => {
       }
     }
 
-    req.user = await UserModel.findById(req.session.userId);
+    req.user = await UserModel.findOne({ _id: req.session.userId }) as User;
 
     return await fn(req, res);
   };

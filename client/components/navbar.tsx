@@ -4,7 +4,7 @@ import LoginButton from './LoginButton';
 import { IGlobalState } from '../store';
 import Link from 'next/link';
 
-export function Navbar() {
+export default function() {
   const client = useSelector((state: IGlobalState) => state.client);
   const [burgerActive, setBurgerActive] = useState(false);
 

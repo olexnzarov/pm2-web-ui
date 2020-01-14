@@ -26,11 +26,6 @@ export class AppOwnership implements IAppOwnership {
 
   @prop({ required: true })
   public right: UserAppRight;
-
-  @prop()
-  public isAdmin?: boolean;
-
-  public hasRight(right: UserAppRight) { return (this.right & right) === right; }
 };
 
 export class User implements IUser {
@@ -40,10 +35,18 @@ export class User implements IUser {
   @prop({ default: [] })
   public apps: AppOwnership[];
 
+  @prop()
+  public isAdmin?: boolean;
+
   @prop({ required: true })
   public hashedPassword: string;
 
   public isValidPassword(password: string) { return User.hash(password) === password; }
+
+  public hasRight(app: string, right: UserAppRight) {
+    const own = this.apps.find(a => a.id === app);
+    return own ? (own.right & right) === right : false;
+  }
 
   public getPublicData() {
     return {

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { onInput } from '../util';
 import Router from 'next/router';
 import Input from './Input';
-import { Navbar } from './navbar';
+import Navbar from './Navbar';
 import * as validate from '../../shared/validation';
 import axios from 'axios';
 
