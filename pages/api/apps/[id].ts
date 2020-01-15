@@ -1,9 +1,9 @@
 import { IApiRequest, IApiResponse } from '../../../server/api';
 import { pm2, authenticate, database, session, method, combine } from '../../../server/middlewares';
-import { getList } from '../../../server/pm2';
+import { getApp } from '../../../server/pm2';
 import { UserAppRight } from '../../../server/models/user';
 
-const getApp = async (req: IApiRequest, res: IApiResponse) => {
+const onGet = async (req: IApiRequest, res: IApiResponse) => {
   const { user, query } = req;
   const { id } = query;
 
@@ -12,15 +12,22 @@ const getApp = async (req: IApiRequest, res: IApiResponse) => {
     return;
   }
 
-  const list = await getList();
-  const app = list.find(a => a.name === id);
+  const app = await getApp(id);
 
   if (!app) {
     res.status(404).json({ message: 'This application does not exist.' });
     return;
   }
 
-  res.status(200).json({ app: list.find(a => a.name === id) });
+  res.status(200).json({ app });
 };
 
-export default combine(method('GET'), database, session, authenticate({ required: true }), pm2, getApp);
+const onPost = (req: IApiRequest, res: IApiResponse) => {
+  const { action } = req.body;
+  console.log(action);
+  res.status(200).json({ message: 'ok' });
+};
+
+const onRequest = (req: IApiRequest, res: IApiResponse) => req.method === 'GET' ? onGet(req, res) : onPost(req, res);
+
+export default combine(method('GET', 'POST'), database, session, authenticate({ required: true }), pm2, onRequest);
