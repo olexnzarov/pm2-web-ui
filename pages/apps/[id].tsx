@@ -16,52 +16,8 @@ import { IApp, AppStatus, ExecMode, IAppInstance } from '../../shared/pm2';
 import { AppAction } from '../../shared/actions';
 import ReloadButton from '../../client/components/apps/ReloadButton';
 import ClusterIcon from '../../client/components/ClusterIcon';
+import InstancesList from '../../client/components/apps/InstancesList';
 
-function DataRow({ name, value }) {
-  return <tr>
-    <td style={{ textAlign: 'center' }}><b>{name}</b></td>
-    <td style={{ textAlign: 'center', width: '100%' }}>{value}</td>
-  </tr>;
-}
-
-function MonitoringPanel(props) {
-  const apps = props.apps as IAppInstance[];
-  return (
-    <div className="container">
-      <style>{`
-        tr { display: flex; }
-        tr > th, td { flex: 1; text-align: center!important; }
-        .is-online > th { border-color: #48c774!important; }
-        .is-offline > th { border-color: #f14668!important; }
-      `}</style>
-      {
-        apps.map(({ pid, monit: { cpu, memory }, pm2_env: { status } }) =>
-          <div key={pid} className="box">
-            <b>pid: {pid}</b>
-            <table className="table status-table is-fullwidth is-centered">
-              <thead>
-                <tr className={`is-size-5 ${(status === AppStatus.ONLINE || status === AppStatus.ONE_LAUNCH) ? 'is-online' : 'is-offline'}`}>
-                  <th>status</th>
-                  <th>memory</th>
-                  <th>cpu</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{status}</td>
-                  <td>{(memory / bytesInMb).toFixed(2)}mb</td>
-                  <td>{cpu}%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )
-      }
-    </div>
-  );
-};
-
-const bytesInMb = 1024**2;
 export default withRedux(withAuth(function() {
   const isMounted = useRef(true);
 
@@ -131,7 +87,7 @@ export default withRedux(withAuth(function() {
         </div>
       </div>
 
-      <MonitoringPanel apps={instances} />
+      <InstancesList apps={instances} />
     </Layout>
   );
 }));

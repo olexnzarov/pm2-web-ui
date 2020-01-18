@@ -38,7 +38,6 @@ export interface IAppInstance {
   monit: IPM2Monitoring;
   name: string;
   pm2_env: IPM2Environment;
-  instances: IAppInstance[];
 };
 
 export interface IApp {

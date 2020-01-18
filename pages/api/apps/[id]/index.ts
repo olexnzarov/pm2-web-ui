@@ -1,8 +1,8 @@
-import { IApiRequest, IApiResponse } from '../../../server/api';
-import { pm2, authenticate, database, session, method, combine } from '../../../server/middlewares';
-import { getApp, stopApp, deleteApp, reloadApp, restartApp } from '../../../server/pm2';
-import { AppAction } from '../../../shared/actions';
-import { UserAppRight } from '../../../server/models/user';
+import { IApiRequest, IApiResponse } from '../../../../server/api';
+import { pm2, authenticate, database, session, method, combine } from '../../../../server/middlewares';
+import { getApp, stopApp, deleteApp, reloadApp, restartApp } from '../../../../server/pm2';
+import { AppAction } from '../../../../shared/actions';
+import { UserAppRight } from '../../../../server/models/user';
 
 const onGet = async (req: IApiRequest, res: IApiResponse) => {
   const { user, query } = req;
