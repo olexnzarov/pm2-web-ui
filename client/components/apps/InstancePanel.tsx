@@ -9,10 +9,10 @@ const tabs = [
 ];
 
 function EnvironmentTab(props) {
-  const { pm2_env } = props.app as IAppInstance;
+  const { name, pm2_env } = props.app as IAppInstance;
   const { env } = pm2_env;
 
-  const keys = Object.keys(env);
+  const keys = Object.keys(env).filter(k => k != name);
   return (
     <div className="table-container" style={{ width: '100%' }}>
       <table className="table is-narrow is-fullwidth is-bordered auto-overflow" style={{ tableLayout: 'fixed' }}>
