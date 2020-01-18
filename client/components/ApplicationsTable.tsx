@@ -1,7 +1,8 @@
 import moment from 'moment';
 import Router from 'next/router';
 import ErrorDisplay from './ErrorDisplay';
-import { IApp } from '../../shared/pm2'; 
+import { IAppInstance, AppStatus, ExecMode } from '../../shared/pm2'; 
+import ClusterIcon from './ClusterIcon';
 
 function TableHead({ columns }) {
   const elements = columns.map(col => <th key={col}>{col}</th>);
@@ -48,17 +49,17 @@ const functionalCell = (id) => {
 };
 
 const statusIcon = {
-  online: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-play has-text-success"></i></span>,
-  stopping: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop-circle"></i></span>,
-  stopped: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop"></i></span>,
-  launching: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-rocket has-text-primary"></i></span>,
-  errored: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-exclamation-triangle has-text-danger"></i></span>,
-  ['one-launch-status']: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-asterisk"></i></span>,
+  [AppStatus.ONLINE]: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-play has-text-success"></i></span>,
+  [AppStatus.STOPPING]: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop-circle"></i></span>,
+  [AppStatus.STOPPED]: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-stop"></i></span>,
+  [AppStatus.LAUNCHING]: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-rocket has-text-primary"></i></span>,
+  [AppStatus.ERRORED]: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-exclamation-triangle has-text-danger"></i></span>,
+  [AppStatus.ONE_LAUNCH]: () => <span className="icon is-pulled-right" style={{ marginLeft: '10px' }}><i className="fas fa-asterisk"></i></span>,
 };
 
 const bytesInMb = 1024**2;
 function ApplicationRow({ app, isFirst = false }) {
-  const { pid, pm_id: id, name, monit, pm2_env } = app as IApp;
+  const { pid, pm_id: id, name, monit, pm2_env } = app as IAppInstance;
   const { memory, cpu } = monit;
   const { restart_time: restarts, unstable_restarts: unstableRestarts, pm_uptime: uptime, status, exec_mode: execMode } = pm2_env;
   const icon = statusIcon[status] ? statusIcon[status]() : null;
@@ -66,9 +67,12 @@ function ApplicationRow({ app, isFirst = false }) {
   const mup = moment(uptime);
   const Td = functionalCell(name);
   const details = `${name}\npid: ${pid}`;
+
+  const postfix = execMode === ExecMode.CLUSTER ? (<>{` (${pid})`}<ClusterIcon /></>) : null;
+
   return <tr>
     <Td>{id}</Td>
-    <Td className={`has-tooltip-${isFirst ? 'right' : 'top'}`} data-tooltip={details}>{name}</Td>
+    <Td className={`has-tooltip-${isFirst ? 'right' : 'top'}`} data-tooltip={details}>{name}{postfix}</Td>
     <Td>{icon}{status}</Td>
     <Td data-tooltip={mup.calendar()}>{mup.fromNow(true)}</Td>
     <Td>

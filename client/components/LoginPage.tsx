@@ -24,7 +24,7 @@ function LoadingPanel() {
   </div>;
 }
 
-export default function({ isLoading = false }) {
+export default function({ isLoading = false, error = null }) {
   if (isLoading) { return <LoadingPanel />; }
 
   const [username, setUsername] = useState(null);
@@ -44,6 +44,8 @@ export default function({ isLoading = false }) {
     const isValid = validate.password(password);
     if (isValid != validPassword) { setValidPassword(isValid); }
   }
+
+  if (error && !reqError) { setError(error); }
 
   return <div>
     <Navbar/>

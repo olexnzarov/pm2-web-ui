@@ -1,6 +1,7 @@
 import { IApiRequest, IApiResponse } from '../../../server/api';
 import { pm2, authenticate, database, session, method, combine } from '../../../server/middlewares';
-import { getApp } from '../../../server/pm2';
+import { getApp, stopApp, deleteApp, reloadApp, restartApp } from '../../../server/pm2';
+import { AppAction } from '../../../shared/actions';
 import { UserAppRight } from '../../../server/models/user';
 
 const onGet = async (req: IApiRequest, res: IApiResponse) => {
@@ -22,10 +23,25 @@ const onGet = async (req: IApiRequest, res: IApiResponse) => {
   res.status(200).json({ app });
 };
 
-const onPost = (req: IApiRequest, res: IApiResponse) => {
-  const { action } = req.body;
-  console.log(action);
-  res.status(200).json({ message: 'ok' });
+const actions = {
+  [AppAction.DELETE]: deleteApp,
+  [AppAction.STOP]: stopApp,
+  [AppAction.RELOAD]: reloadApp,
+  [AppAction.RESTART]: restartApp,
+  [AppAction.START]: restartApp,
+};
+
+const onPost = async (req: IApiRequest, res: IApiResponse) => {
+  const { id, action } = req.body;
+  const fn = actions[action];
+
+  try {
+    await fn(id);
+    res.status(200).json({});
+  }
+  catch (err) {
+    res.status(500).json({ message: err.toString() });
+  }
 };
 
 const onRequest = (req: IApiRequest, res: IApiResponse) => req.method === 'GET' ? onGet(req, res) : onPost(req, res);

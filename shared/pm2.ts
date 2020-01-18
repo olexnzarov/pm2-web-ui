@@ -7,6 +7,11 @@ export enum AppStatus {
   ONE_LAUNCH = 'one-launch-status',
 };
 
+export enum ExecMode {
+  CLUSTER = 'cluster_mode',
+  FORK = 'fork_mode',
+};
+
 export interface IPM2Environment {
   pm_cwd: string;
   pm_out_log_path: string;
@@ -27,10 +32,18 @@ export interface IPM2Monitoring {
   cpu: number;
 }
 
-export interface IApp {
+export interface IAppInstance {
   pid: number;
   pm_id: number;
   monit: IPM2Monitoring;
   name: string;
   pm2_env: IPM2Environment;
+  instances: IAppInstance[];
 };
+
+export interface IApp {
+  name: string;
+  pm_id: number;
+  exec_mode: ExecMode;
+  instances: IAppInstance[];
+}

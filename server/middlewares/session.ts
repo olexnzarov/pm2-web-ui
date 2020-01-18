@@ -4,4 +4,8 @@ import connectMongo from 'connect-mongo';
 
 const MongoStore = connectMongo(session);
 
-export default (fn) => withSession(fn, { storePromisify: true, store: new MongoStore({ mongooseConnection: mongoose.connection }) });
+let store;
+export default (fn) => withSession(fn, { 
+  storePromisify: true, 
+  store: store ? store : (store = new MongoStore({ mongooseConnection: mongoose.connection })),
+});

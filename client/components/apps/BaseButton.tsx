@@ -5,10 +5,10 @@ const unknownState = {
   color: 'is-danger',
 };
 
-export default function({ traits, status, onClick, ...props }) {
+export default function({ traits, status, loading = false, ...props }) {
   const { disabled, text, icon, color } = traits[status] || unknownState;
 
-  return <button className={`button ${color}`} disabled={disabled} {...props}>
+  return <button className={`button ${color} ${loading ? 'is-loading' : ''}`} disabled={disabled || loading} {...props}>
     <span className="icon is-small">
       <i className={`fas ${icon}`}></i>
     </span>
