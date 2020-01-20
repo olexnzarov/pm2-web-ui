@@ -90,8 +90,6 @@ export default function({ isLoading = false, error = null }) {
               try {
                 const data = await onLogin(username, password);
 
-                console.log(data);
-
                 dispatch({ type: 'auth', client: data });
                 
                 setLoading(false);

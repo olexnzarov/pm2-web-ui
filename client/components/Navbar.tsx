@@ -25,32 +25,21 @@ export default function() {
 
     <div id="navbar" className={`navbar-menu ${burgerActive ? 'is-active' : ''}`}>
       <div className="navbar-start">
-        <a className="navbar-item">
-          Home
-        </a>
+        <Link href="/"><a className="navbar-item">Applications</a></Link>
+        <Link href="/"><a className="navbar-item">Profile</a></Link>
 
-        <a className="navbar-item">
-          Documentation
-        </a>
 
         <div className="navbar-item has-dropdown is-hoverable">
           <a className="navbar-link">
-            More
+            Administration
           </a>
 
           <div className="navbar-dropdown">
             <a className="navbar-item">
-              About
+              Users
             </a>
             <a className="navbar-item">
-              Jobs
-            </a>
-            <a className="navbar-item">
-              Contact
-            </a>
-            <hr className="navbar-divider"/>
-            <a className="navbar-item">
-              Report an issue
+              Deploy an application
             </a>
           </div>
         </div>

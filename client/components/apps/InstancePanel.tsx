@@ -1,12 +1,39 @@
 import { IAppInstance, AppStatus } from "../../../shared/pm2";
 import { useState } from 'react';
+import useSWR from 'swr';
+import { fetcher } from '../../../client/util';
+import ErrorDisplay from '../ErrorDisplay';
 
 const tabs = [
   { title: 'Monitoring', element: MonitoringTab },
   { title: 'Details', element: DetailsTab },
   { title: 'Environment', element: EnvironmentTab },
-  { title: 'Logs', element: () => <></> },
+  { title: 'Logs', element: LogsPanel },
 ];
+
+function LogsPanel(props) {
+  const { name, pm_id } = props.app as IAppInstance;
+  const { data, error, isValidating } = useSWR(`/api/apps/${name}/${pm_id}/logs`, fetcher, { refreshInterval: 3000 });
+
+  if (error) { return <ErrorDisplay title={error.response?.statusText ?? 'Error'} text={error.response?.data?.message ?? error.toString()} /> }
+
+  return (
+    <div>
+      <div className="field">
+        <label className="label">Output Logs</label>
+        <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
+          <textarea className="textarea" readOnly rows={15}>{data?.output}</textarea>
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">Error Logs</label>
+        <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
+          <textarea className="textarea" readOnly rows={15}>{data?.error}</textarea>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function EnvironmentTab(props) {
   const { name, pm2_env } = props.app as IAppInstance;

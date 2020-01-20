@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { withRedux } from '../client/middlewares/redux';
 import { withAuth } from '../client/middlewares/auth'; 
@@ -9,16 +9,21 @@ import Navbar from '../client/components/Navbar';
 const redirect = () => Router.push('/');
 
 export default withRedux(withAuth(function() {
+  const isMounted = useRef(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
     axios.post('/api/logout')
       .then(() => {
+        if (!isMounted) { return; }
+
         dispatch({ type: 'auth', client: null });
         redirect();
       })
       .catch((err) => {
+        if (!isMounted) { return; }
+
         const msg = err.response?.data?.message;
         setError(msg ? [err.response.statusText ?? 'Error', msg] : ['Error', err.toString()]);
       });

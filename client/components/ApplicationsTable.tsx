@@ -3,6 +3,7 @@ import Router from 'next/router';
 import ErrorDisplay from './ErrorDisplay';
 import { IAppInstance, AppStatus, ExecMode } from '../../shared/pm2'; 
 import ClusterIcon from './ClusterIcon';
+import WatchIcon from './WatchIcon';
 
 function TableHead({ columns }) {
   const elements = columns.map(col => <th key={col}>{col}</th>);
@@ -61,14 +62,14 @@ const bytesInMb = 1024**2;
 function ApplicationRow({ app, isFirst = false }) {
   const { pid, pm_id: id, name, monit, pm2_env } = app as IAppInstance;
   const { memory, cpu } = monit;
-  const { restart_time: restarts, unstable_restarts: unstableRestarts, pm_uptime: uptime, status, exec_mode: execMode } = pm2_env;
+  const { watch, restart_time: restarts, unstable_restarts: unstableRestarts, pm_uptime: uptime, status, exec_mode: execMode } = pm2_env;
   const icon = statusIcon[status] ? statusIcon[status]() : null;
 
   const mup = moment(uptime);
   const Td = functionalCell(name);
   const details = `${name}\npid: ${pid}`;
 
-  const postfix = execMode === ExecMode.CLUSTER ? (<>{` (${pid})`}<ClusterIcon /></>) : null;
+  const postfix = <>{execMode === ExecMode.CLUSTER ? (<>{` (${pid})`}<ClusterIcon /></>) : null}{watch ? <WatchIcon /> : null}</>;
 
   return <tr>
     <Td>{id}</Td>
