@@ -1,6 +1,11 @@
 import pm from 'pm2';
 import { IApp, IAppInstance, ExecMode } from '../shared/pm2';
 
+import _fs from 'fs';
+import * as bluebird from 'bluebird';
+
+const fs = bluebird.promisifyAll(_fs);
+
 export const getList = () => new Promise<IAppInstance[]>((resolve, reject) => pm.list((err, list: any) => err ? reject(err) : resolve(list)));
 
 export const getApp = async (name): Promise<IApp> => {
@@ -27,6 +32,24 @@ export const getApp = async (name): Promise<IApp> => {
     exec_mode: temp.pm2_env.exec_mode,
     instances: apps,
   };
+};
+
+const getDescription = (pmId) => new Promise<IAppInstance[]>((resolve, reject) => pm.describe(pmId, (err, list: any) => err ? reject(err) : resolve(list)));
+
+export const getLogs = async (pmId) => {
+  const [app] = await getDescription(pmId);
+
+  if (!app) { throw 'Application does not exist.'; }
+
+  const { pm_out_log_path, pm_err_log_path } = app.pm2_env;
+
+  const response = {
+    app,
+    output: pm_out_log_path ? await fs.readFileAsync(pm_out_log_path, 'utf8') : 'There is no log file provided.',
+    error: pm_err_log_path ? await fs.readFileAsync(pm_err_log_path, 'utf8') : 'There is no log file provided.',
+  };
+
+  return response;
 };
 
 export const stopApp = (name) => new Promise((resolve, reject) => pm.stop(name, (err) => err ? reject(err) : resolve()));

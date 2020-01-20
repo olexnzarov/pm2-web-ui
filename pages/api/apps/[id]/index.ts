@@ -1,5 +1,5 @@
 import { IApiRequest, IApiResponse } from '../../../../server/api';
-import { pm2, authenticate, database, session, method, combine } from '../../../../server/middlewares';
+import { pm2, authenticate, database, session, method, combine, RequestError } from '../../../../server/middlewares';
 import { getApp, stopApp, deleteApp, reloadApp, restartApp } from '../../../../server/pm2';
 import { AppAction } from '../../../../shared/actions';
 import { UserAppRight } from '../../../../server/models/user';
@@ -9,15 +9,13 @@ const onGet = async (req: IApiRequest, res: IApiResponse) => {
   const { id } = query;
 
   if (!user.isAdmin && !user.hasRight(id as string, UserAppRight.VIEW)) {
-    res.status(403).json({ message: 'You do not have access to this application.' });
-    return;
+    throw new RequestError('You do not have access to this application.', 403);
   }
 
   const app = await getApp(id);
 
   if (!app) {
-    res.status(404).json({ message: 'This application does not exist.' });
-    return;
+    throw new RequestError('This application does not exist.', 404);
   }
 
   res.status(200).json({ app });
@@ -40,7 +38,7 @@ const onPost = async (req: IApiRequest, res: IApiResponse) => {
     res.status(200).json({});
   }
   catch (err) {
-    res.status(500).json({ message: err.toString() });
+    throw new RequestError(err.message ?? err.toString());
   }
 };
 

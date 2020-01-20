@@ -1,3 +1,5 @@
+import { IApiRequest, IApiResponse } from '../api';
+
 import database from './database';
 import method from './method';
 import session from './session';
@@ -12,6 +14,34 @@ export {
   pm2,
 };
 
+const handleExceptions = (fn) => {
+  return async (req: IApiRequest, res: IApiResponse) => {
+    try {
+      await fn(req, res);
+    }
+    catch (err) {
+      const responded = (res as any)._headerSent;
+      const status = err.status ?? 500;
+      const message = err.message ?? err.toString();
+
+      if (!responded) { res.status(status).json({ message }); }
+      if (!status) { console.error(err); }
+    }
+  };
+};
+
+export class RequestError extends Error {
+  public message: string;
+  public status: number;
+
+  constructor(message, status = 500) {
+    super();
+
+    this.message = message;
+    this.status = status;
+  }
+};
+
 export const combine = (...fns) => {
   const len = fns.length;
   let fn = fns[len - 1];
@@ -22,5 +52,5 @@ export const combine = (...fns) => {
     }
   }
 
-  return fn;
+  return handleExceptions(fn);
 };

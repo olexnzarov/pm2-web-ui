@@ -25,6 +25,7 @@ export interface IPM2Environment {
   instances: number;
   pm_exec_path: string;
   env: object;
+  watch?: boolean;
 };
 
 export interface IPM2Monitoring {

@@ -1,21 +1,19 @@
 import { IApiRequest, IApiResponse } from '../../server/api';
 import { UserModel, User } from '../../server/models/user';
-import { database, session, method, combine } from '../../server/middlewares';
+import { database, session, method, combine, RequestError } from '../../server/middlewares';
 import * as validate from '../../shared/validation';
 
 const login = async (req: IApiRequest, res: IApiResponse) => {
   const { username, password } = req.body;
 
   if (!validate.all(validate.username(username), validate.password(password))) {
-    res.status(400).json({ message: 'Invalid username or password.' });
-    return;
+    throw new RequestError('Invalid username or password.', 400);
   }
 
   const user = await UserModel.findOne({ username, hashedPassword: User.hash(password) }) as User;
 
   if (!user) {
-    res.status(403).json({ message: 'User with given username and password was not found.' });
-    return;
+    throw new RequestError('User with given username and password was not found.', 403);
   }
 
   req.session.userId = (user as any)._id;
