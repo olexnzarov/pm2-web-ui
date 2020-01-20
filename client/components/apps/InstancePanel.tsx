@@ -22,13 +22,13 @@ function LogsPanel(props) {
       <div className="field">
         <label className="label">Output Logs</label>
         <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
-          <textarea className="textarea" readOnly rows={15}>{data?.output}</textarea>
+          <textarea className="textarea" readOnly rows={15} value={data?.output} />
         </div>
       </div>
       <div className="field">
         <label className="label">Error Logs</label>
         <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
-          <textarea className="textarea" readOnly rows={15}>{data?.error}</textarea>
+          <textarea className="textarea" readOnly rows={15} value={data?.error} />
         </div>
       </div>
     </div>

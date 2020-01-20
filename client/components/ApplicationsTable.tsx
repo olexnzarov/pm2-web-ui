@@ -4,11 +4,7 @@ import ErrorDisplay from './ErrorDisplay';
 import { IAppInstance, AppStatus, ExecMode } from '../../shared/pm2'; 
 import ClusterIcon from './ClusterIcon';
 import WatchIcon from './WatchIcon';
-
-function TableHead({ columns }) {
-  const elements = columns.map(col => <th key={col}>{col}</th>);
-  return <thead><tr>{elements}</tr></thead>;
-};
+import TableHead from './TableHead';
 
 function TableCell({ children, ...props }) {
   return <td 
@@ -71,25 +67,27 @@ function ApplicationRow({ app, isFirst = false }) {
 
   const postfix = <>{execMode === ExecMode.CLUSTER ? (<>{` (${pid})`}<ClusterIcon /></>) : null}{watch ? <WatchIcon /> : null}</>;
 
-  return <tr>
-    <Td>{id}</Td>
-    <Td className={`has-tooltip-${isFirst ? 'right' : 'top'}`} data-tooltip={details}>{name}{postfix}</Td>
-    <Td>{icon}{status}</Td>
-    <Td data-tooltip={mup.calendar()}>{mup.fromNow(true)}</Td>
-    <Td>
-      {restarts}
-      {
-        unstableRestarts > 0 ? [
-          ' + ', 
-          <b key='unstable-restarts' className="has-text-danger has-tooltip-danger" data-tooltip={`this application had ${unstableRestarts} unstable restart${unstableRestarts != 1 ? 's' : ''}`}>
-            {unstableRestarts}
-          </b>
-        ] : null
-      }
-    </Td>
-    <Td>{(memory / bytesInMb).toFixed(2)}mb</Td>
-    <Td>{cpu}%</Td>
-  </tr>;
+  return (
+    <tr>
+      <Td>{id}</Td>
+      <Td className={`has-tooltip-${isFirst ? 'right' : 'top'}`} data-tooltip={details}>{name}{postfix}</Td>
+      <Td>{icon}{status}</Td>
+      <Td data-tooltip={mup.calendar()}>{mup.fromNow(true)}</Td>
+      <Td>
+        {restarts}
+        {
+          unstableRestarts > 0 ? [
+            ' + ', 
+            <b key='unstable-restarts' className="has-text-danger has-tooltip-danger" data-tooltip={`this application had ${unstableRestarts} unstable restart${unstableRestarts != 1 ? 's' : ''}`}>
+              {unstableRestarts}
+            </b>
+          ] : null
+        }
+      </Td>
+      <Td>{(memory / bytesInMb).toFixed(2)}mb</Td>
+      <Td>{cpu}%</Td>
+    </tr>
+  );
 };
 
 function LoadingBar() {
@@ -97,9 +95,11 @@ function LoadingBar() {
 }
 
 function EmptyTable() {
-  return <div style={{ textAlign: 'center', width: '100%', padding: '10px' }}>
-    <p className="subtitle">There are no applications.</p>
-  </div>;
+  return (
+    <div style={{ textAlign: 'center', width: '100%', padding: '10px' }}>
+      <p className="subtitle">There are no applications.</p>
+    </div>
+  );
 }
 
 export default function(props) {
@@ -116,12 +116,14 @@ export default function(props) {
   if (apps.length === 0) { return <EmptyTable />; }
 
   const rows = apps.map((app, index) => <ApplicationRow key={`app_row_${app.pid}`} app={app} isFirst={index === 0}/>);
-  return <div className="table-container" style={{ width: '100%' }}>
-    <table className="table is-fullwidth is-bordered is-striped is-hoverable">
-      <TableHead columns={['id', 'name', 'status', 'uptime', 'restarts', 'memory', 'cpu']} />
-      <tbody>
-        {rows}
-      </tbody>
-    </table>
-  </div>;
+  return (
+    <div className="table-container" style={{ width: '100%' }}>
+      <table className="table is-fullwidth is-bordered is-striped is-hoverable">
+        <TableHead columns={['id', 'name', 'status', 'uptime', 'restarts', 'memory', 'cpu']} />
+        <tbody>
+          {rows}
+        </tbody>
+      </table>
+    </div>
+  );
 };

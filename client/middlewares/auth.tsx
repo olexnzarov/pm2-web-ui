@@ -16,7 +16,7 @@ export const withAuth = (Component) => {
 
     useEffect(() => {
       if (!authSynced) {
-        axios.get('/api/auth')
+        axios.get('/api/me')
           .then(({ data: { user } }) => isMounted && dispatch({ type: 'auth', client: user }))
           .catch((err) => {
             if (!isMounted) { return; }

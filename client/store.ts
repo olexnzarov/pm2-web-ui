@@ -5,6 +5,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 export interface IAuthedClient {
   id: string;
   username: string;
+  isAdmin: boolean;
 };
 
 export interface IGlobalState {

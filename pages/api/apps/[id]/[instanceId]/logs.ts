@@ -1,7 +1,7 @@
 import { IApiRequest, IApiResponse } from '../../../../../server/api';
 import { getLogs } from '../../../../../server/pm2';
 import { database, session, method, authenticate, combine, RequestError } from '../../../../../server/middlewares';
-import { UserAppRight } from '../../../../../server/models/user';
+import { UserAppRight } from '../../../../../shared/user';
 
 const onRequest = async (req: IApiRequest, res: IApiResponse) => {
   const { query, user } = req;

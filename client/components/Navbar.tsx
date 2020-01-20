@@ -24,28 +24,32 @@ export default function() {
     </div>
 
     <div id="navbar" className={`navbar-menu ${burgerActive ? 'is-active' : ''}`}>
-      <div className="navbar-start">
-        <Link href="/"><a className="navbar-item">Applications</a></Link>
-        <Link href="/"><a className="navbar-item">Profile</a></Link>
+      {
+        client &&
+        <div className="navbar-start">
+          <Link href="/"><a className="navbar-item">Dashboard</a></Link>
+          
+          {
+            client.isAdmin && 
+            <div className="navbar-item has-dropdown is-hoverable">
+              <a className="navbar-link">
+                Administration
+              </a>
 
-
-        <div className="navbar-item has-dropdown is-hoverable">
-          <a className="navbar-link">
-            Administration
-          </a>
-
-          <div className="navbar-dropdown">
-            <a className="navbar-item">
-              Users
-            </a>
-            <a className="navbar-item">
-              Deploy an application
-            </a>
-          </div>
+              <div className="navbar-dropdown">
+                <Link href="/users"><a className="navbar-item">Users</a></Link>
+                <Link href="/deployment"><a className="navbar-item">Deploy an application</a></Link>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      }
 
       <div className="navbar-end">
+        {
+          client &&
+          <Link href="/profile"><a className="navbar-item">{client.username}</a></Link>
+        }
         <div className="navbar-item">
           <LoginButton isLoading={false} logout={!!client}/>
         </div>

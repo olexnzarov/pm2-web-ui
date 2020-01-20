@@ -1,24 +1,6 @@
 import * as mongoose from 'mongoose';
 import { prop, getModelForClass, DocumentType } from '@typegoose/typegoose';
-
-export interface IUser {
-  username: string;
-  isAdmin?: boolean;
-  apps: IAppOwnership[];
-};
-
-export enum UserAppRight {
-  NONE = 0,
-  VIEW = 0x1,
-  MANAGE = 0x2,
-  DELETE = 0x4,
-  INTERACT = 0x8,
-};
-
-export interface IAppOwnership {
-  id: string;
-  right: UserAppRight;
-};
+import { UserAppRight, IAppOwnership, IUser } from '../../shared/user';
 
 export class AppOwnership implements IAppOwnership {
   @prop({ required: true })
@@ -52,6 +34,7 @@ export class User implements IUser {
     return {
       id: (this as any)._id,
       username: this.username,
+      isAdmin: this.isAdmin,
     };
   }
 
