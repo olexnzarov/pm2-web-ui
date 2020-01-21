@@ -1,11 +1,13 @@
 import { createStore, applyMiddleware, Dispatch } from 'redux';
 import { useDispatch as _useDispatch } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { IAppOwnership } from '../shared/user';
 
 export interface IAuthedClient {
   id: string;
   username: string;
   isAdmin: boolean;
+  apps: IAppOwnership[];
 };
 
 export interface IGlobalState {

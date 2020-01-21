@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import useSWR from 'swr';
 import { fetcher } from '../../client/util';
 import { withRedux } from '../../client/middlewares/redux';
@@ -12,16 +13,19 @@ import RestartButton from '../../client/components/apps/RestartButton';
 import DeleteButton from '../../client/components/apps/DeleteButton';
 import Panel from '../../client/components/Panel';
 import ErrorDisplay from '../../client/components/ErrorDisplay';
-import { IApp, AppStatus, ExecMode, IAppInstance } from '../../shared/pm2';
+import { IApp, AppStatus, ExecMode } from '../../shared/pm2';
 import { AppAction } from '../../shared/actions';
 import ReloadButton from '../../client/components/apps/ReloadButton';
 import ClusterIcon from '../../client/components/ClusterIcon';
 import InstancesList from '../../client/components/apps/InstancesList';
+import { IGlobalState } from '../../client/store';
+import { UserAppRight } from '../../shared/user';
 
 export default withRedux(withAuth(function() {
   const isMounted = useRef(true);
-
+  const client = useSelector((state: IGlobalState) => state.client);
   const [isWaiting, setWaiting] = useState(false);
+  const [warning, setWarning] = useState(null);
   const router = useRouter();
   const { id } = router.query;
   const { data, error, isValidating, revalidate } = useSWR(`/api/apps/${id}`, fetcher, { refreshInterval: 3000 });
@@ -41,6 +45,10 @@ export default withRedux(withAuth(function() {
     );
   }
 
+  const appRights = client.apps.find(a => a.id === id)?.right ?? 0;
+  const canManage = (appRights & UserAppRight.MANAGE) === UserAppRight.MANAGE;
+  const canDelete = (appRights & UserAppRight.DELETE) === UserAppRight.DELETE;
+
   const { app } = data;
   const { pm_id: pmId, name, exec_mode: execMode, instances } = app as IApp;
   const status = instances[0]?.pm2_env.status;
@@ -52,9 +60,17 @@ export default withRedux(withAuth(function() {
 
   const sendAction = async (action: AppAction) => {
     setWaiting(true);
+    setWarning(null);
 
-    await axios.post(`/api/apps/${id}`, { action, id: name });
-    await revalidate();
+    try {
+      await axios.post(`/api/apps/${id}`, { action, id: name });
+      await revalidate();
+    }
+    catch (err) {
+      if (isMounted) { 
+        setWarning([err.response?.statusText ?? 'Error', err.response?.data?.message ?? err.toString()]); 
+      }
+    }
 
     if (isMounted) { setWaiting(false); }
   };
@@ -75,13 +91,18 @@ export default withRedux(withAuth(function() {
           <div className="columns">
             <style>{'.is-inline-flex > button { flex: 1; }'}</style>
             <div className="column is-12 buttons is-inline-flex">
-              <StartButton {...buttonProps} onClick={() => sendAction(isOnline ? AppAction.STOP : AppAction.START)} />
+              <StartButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(isOnline ? AppAction.STOP : AppAction.START)} />
               {
                 isCluster &&
-                <ReloadButton {...buttonProps} onClick={() => sendAction(AppAction.RELOAD)} />
+                <ReloadButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(AppAction.RELOAD)} />
               }
-              <RestartButton {...buttonProps} onClick={() => sendAction(AppAction.RESTART)} />
-              <DeleteButton {...buttonProps} onClick={() => sendAction(AppAction.DELETE)} />
+              <RestartButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(AppAction.RESTART)} />
+              <DeleteButton {...buttonProps} disabled={!canDelete} onClick={() => sendAction(AppAction.DELETE)} />
+
+              {
+                warning &&
+                <ErrorDisplay color='is-warning' style={{ width: '100%', marginBottom: '10px' }} title={warning[0]} text={warning[1]} />
+              }
             </div>
           </div>
         </div>

@@ -35,6 +35,7 @@ export class User implements IUser {
       id: (this as any)._id,
       username: this.username,
       isAdmin: this.isAdmin,
+      apps: this.apps,
     };
   }
 

@@ -1,5 +1,5 @@
-export default function({ title, text, onRemove = null, ...props }) {
-  return <article className="message is-danger" {...props}>
+export default function({ title, text, color='is-danger', onRemove = null, ...props }) {
+  return <article className={`message ${color}`} {...props}>
     <div className="message-header">
       <p>{title}</p>
       {

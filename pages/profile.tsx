@@ -9,6 +9,7 @@ import { IAppOwnership, UserAppRight } from '../shared/user';
 import Layout from '../client/components/Layout';
 import Icon from '../client/components/Icon';
 import TableHead from '../client/components/TableHead';
+import ErrorDisplay from '../client/components/ErrorDisplay';
 
 function AdminInfoPanel() {
   return (
@@ -73,7 +74,7 @@ function AppsList(props) {
 
 export default withRedux(withAuth(function() {
   const client = useSelector((state: IGlobalState) => state.client);
-  const { data, error } = useSWR('/api/me/apps', fetcher);
+  const { data, error } = useSWR('/api/me', fetcher);
 
   return (
     <Layout>
@@ -83,9 +84,14 @@ export default withRedux(withAuth(function() {
         </div>
         <div className="panel-block" style={{ width: '100%' }}>
           {
-            client.isAdmin
-            ? <AdminInfoPanel />
-            : <AppsList apps={data?.apps} />
+            error ? <ErrorDisplay style={{ width: '100%' }} title={error.response?.statusText ?? 'Error'} text={error.response?.data?.message ?? error.toString()} /> : 
+            <>
+              {
+                client.isAdmin
+                ? <AdminInfoPanel />
+                : <AppsList apps={data?.user.apps} />
+              }
+            </>
           }
         </div>
       </div>

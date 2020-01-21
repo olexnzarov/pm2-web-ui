@@ -22,16 +22,23 @@ const onGet = async (req: IApiRequest, res: IApiResponse) => {
 };
 
 const actions = {
-  [AppAction.DELETE]: deleteApp,
-  [AppAction.STOP]: stopApp,
-  [AppAction.RELOAD]: reloadApp,
-  [AppAction.RESTART]: restartApp,
-  [AppAction.START]: restartApp,
+  [AppAction.DELETE]: { fn: deleteApp, right: UserAppRight.DELETE },
+  [AppAction.STOP]: { fn: stopApp, right: UserAppRight.MANAGE },
+  [AppAction.RELOAD]: { fn: reloadApp, right: UserAppRight.MANAGE },
+  [AppAction.RESTART]: { fn: restartApp, right: UserAppRight.MANAGE },
+  [AppAction.START]: { fn: restartApp, right: UserAppRight.MANAGE },
 };
 
 const onPost = async (req: IApiRequest, res: IApiResponse) => {
-  const { id, action } = req.body;
-  const fn = actions[action];
+  const { query, user } = req;
+  const { action } = req.body;
+  const { id } = query;
+
+  const { fn, right } = actions[action];
+
+  if (!user.hasRight(id as string, right)) {
+    throw new RequestError('You don\'t have enough permissions to do this.', 403);
+  }
 
   try {
     await fn(id);
