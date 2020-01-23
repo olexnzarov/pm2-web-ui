@@ -46,8 +46,8 @@ export default withRedux(withAuth(function() {
   }
 
   const appRights = client.apps.find(a => a.id === id)?.right ?? 0;
-  const canManage = (appRights & UserAppRight.MANAGE) === UserAppRight.MANAGE;
-  const canDelete = (appRights & UserAppRight.DELETE) === UserAppRight.DELETE;
+  const canManage = client.isAdmin || (appRights & UserAppRight.MANAGE) === UserAppRight.MANAGE;
+  const canDelete = client.isAdmin || (appRights & UserAppRight.DELETE) === UserAppRight.DELETE;
 
   const { app } = data;
   const { pm_id: pmId, name, exec_mode: execMode, instances } = app as IApp;
@@ -87,23 +87,21 @@ export default withRedux(withAuth(function() {
             Update
           </a>
         </div>
-        <div className="panel-block is-block" style={{ width: '100%' }}>
-          <div className="columns">
-            <style>{'.is-inline-flex > button { flex: 1; }'}</style>
-            <div className="column is-12 buttons is-inline-flex">
-              <StartButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(isOnline ? AppAction.STOP : AppAction.START)} />
-              {
-                isCluster &&
-                <ReloadButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(AppAction.RELOAD)} />
-              }
-              <RestartButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(AppAction.RESTART)} />
-              <DeleteButton {...buttonProps} disabled={!canDelete} onClick={() => sendAction(AppAction.DELETE)} />
+        <div className="panel-block is-block">
+          <style>{'.is-inline-flex > button { flex: 1; }'}</style>
+          <div className="buttons is-inline-flex" style={{ width: '100%' }}>
+            <StartButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(isOnline ? AppAction.STOP : AppAction.START)} />
+            {
+              isCluster &&
+              <ReloadButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(AppAction.RELOAD)} />
+            }
+            <RestartButton {...buttonProps} disabled={!canManage} onClick={() => sendAction(AppAction.RESTART)} />
+            <DeleteButton {...buttonProps} disabled={!canDelete} onClick={() => sendAction(AppAction.DELETE)} />
 
-              {
-                warning &&
-                <ErrorDisplay color='is-warning' style={{ width: '100%', marginBottom: '10px' }} title={warning[0]} text={warning[1]} />
-              }
-            </div>
+            {
+              warning &&
+              <ErrorDisplay color='is-warning' style={{ width: '100%', marginBottom: '10px' }} title={warning[0]} text={warning[1]} />
+            }
           </div>
         </div>
       </div>

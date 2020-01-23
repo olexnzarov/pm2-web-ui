@@ -36,7 +36,7 @@ const onPost = async (req: IApiRequest, res: IApiResponse) => {
 
   const { fn, right } = actions[action];
 
-  if (!user.hasRight(id as string, right)) {
+  if (!user.isAdmin && !user.hasRight(id as string, right)) {
     throw new RequestError('You don\'t have enough permissions to do this.', 403);
   }
 
