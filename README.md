@@ -18,6 +18,8 @@
   <a href="#license">License</a>
 </p>
 
+[![pm2-web-ui](https://i.imgur.com/QvSb9sX.png)](https://github.com/alexnzarov/pm2-web-ui)
+
 ## Key Features
 
 > What you can do?
@@ -33,7 +35,43 @@
 
 ## How To Use
 
-<img src="https://img.shields.io/badge/status-work%20in%20progress-yellowgreen?style=flat-square" alt="work in progress">
+> How to download?
+
+```
+$ git clone git@github.com:alexnzarov/pm2-web-ui.git
+$ cd pm2-web-ui
+$ npm i
+```
+
+> How to configure?
+
+This application is configured via environment variables, here's the list:
+- SALT
+- MONGODB_URI
+
+> How to start the server?
+
+```
+$ npm run build
+$ npm run start
+```
+
+> How to start the server with pm2? 
+
+```
+$ npm run build
+$ pm2 start npm --name "pm2-web-ui" -- start
+(optional)
+$ pm2 save
+```
+
+> How to login?
+
+After you configured and started the server, user will be created with the following credentials:
+
+**Username**: root
+
+**Password** is the same as `SALT` that you specified in the environment.
 
 ## License
 
