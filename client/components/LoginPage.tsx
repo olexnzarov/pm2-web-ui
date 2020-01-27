@@ -13,15 +13,17 @@ const onLogin = async (username, password) => {
 };
 
 function LoadingPanel() {
-  return <div>
-    <Navbar />
-    <div className="columns is-centered">
-      <div className="column is-6-tablet is-5-fullhd" style={{ margin: '40px 25px 20px 25px', textAlign: 'center' }}>
-        <p className="subtitle">Loading...</p>
-        <progress className="progress is-small is-info is-medium" max="100"/>
+  return (
+    <div>
+      <Navbar />
+      <div className="columns is-centered">
+        <div className="column is-6-tablet is-5-fullhd" style={{ margin: '40px 25px 20px 25px', textAlign: 'center' }}>
+          <p className="subtitle">Loading...</p>
+          <progress className="progress is-small is-info is-medium" max="100"/>
+        </div>
       </div>
     </div>
-  </div>;
+  );
 }
 
 export default function({ isLoading = false, error = null }) {
@@ -47,76 +49,78 @@ export default function({ isLoading = false, error = null }) {
 
   if (error && !reqError) { setError(error); }
 
-  return <div>
-    <Navbar/>
-    <div className="columns is-centered">
-      <div className="column is-4-tablet is-3-fullhd" style={{ margin: '40px 25px 20px 25px', textAlign: 'center' }}>
-        <h1 className='subtitle'>Login to continue</h1>
-      </div>
-    </div>
-    <div className="columns is-centered">
-      <div className="column is-4-tablet is-3-fullhd box" style={{ margin: '10px 25px 25px 25px' }}>
-        <Input 
-          id="pm2-ui-username"
-          name="Username" 
-          type="text"
-          placeholder="Username" 
-          value={username || ''} 
-          onChange={onInput(setUsername)} 
-          invalidMessage="This username is invalid"
-          invalid={!validUsername}
-          icon="fa-user"
-        />
-
-        <Input 
-          id="pm2-ui-password"
-          name="Password" 
-          type="password"
-          placeholder="Password" 
-          value={password || ''} 
-          onChange={onInput(setPassword)} 
-          invalidMessage="This password is invalid"
-          invalid={!validPassword}
-          icon="fa-lock"
-        />
-
-        <div className="field">
-          <div className="control">
-            <button className={`button is-link is-fullwidth ${loading ? 'is-loading' : ''}`} onClick={async () => {
-              if (!validUsername || !validPassword) { return; }
-
-              setLoading(true);
-
-              try {
-                const data = await onLogin(username, password);
-
-                dispatch({ type: 'auth', client: data });
-                
-                setLoading(false);
-                Router.push('/');
-              } 
-              catch(err) {
-                const msg = err.response?.data?.message;
-                setLoading(false);
-                setError(msg ? [err.response.statusText ?? 'Error', msg] : ['Error', err.toString()]);
-              }
-            }}>Login</button>
-          </div>
+  return (
+    <div>
+      <Navbar/>
+      <div className="columns is-centered">
+        <div className="column is-4-tablet is-3-fullhd" style={{ margin: '40px 25px 20px 25px', textAlign: 'center' }}>
+          <h1 className='subtitle'>Login to continue</h1>
         </div>
+      </div>
+      <div className="columns is-centered">
+        <div className="column is-4-tablet is-3-fullhd box" style={{ margin: '10px 25px 25px 25px' }}>
+          <Input 
+            id="pm2-ui-username"
+            name="Username" 
+            type="text"
+            placeholder="Username" 
+            value={username || ''} 
+            onChange={onInput(setUsername)} 
+            invalidMessage="This username is invalid"
+            invalid={!validUsername}
+            icon="fa-user"
+          />
 
-        {
-          reqError &&
-          <article className="message is-danger">
-            <div className="message-header">
-              <p>{reqError[0]}</p>
-              <button className="delete" aria-label="delete" onClick={() => setError(null)}></button>
+          <Input 
+            id="pm2-ui-password"
+            name="Password" 
+            type="password"
+            placeholder="Password" 
+            value={password || ''} 
+            onChange={onInput(setPassword)} 
+            invalidMessage="This password is invalid"
+            invalid={!validPassword}
+            icon="fa-lock"
+          />
+
+          <div className="field">
+            <div className="control">
+              <button className={`button is-link is-fullwidth ${loading ? 'is-loading' : ''}`} onClick={async () => {
+                if (!validUsername || !validPassword) { return; }
+
+                setLoading(true);
+
+                try {
+                  const data = await onLogin(username, password);
+
+                  dispatch({ type: 'auth', client: data });
+                  
+                  setLoading(false);
+                  Router.push('/');
+                } 
+                catch(err) {
+                  const msg = err.response?.data?.message;
+                  setLoading(false);
+                  setError(msg ? [err.response.statusText ?? 'Error', msg] : ['Error', err.toString()]);
+                }
+              }}>Login</button>
             </div>
-            <div className="message-body">
-              {reqError[1]}
-            </div>
-          </article>
-        }
+          </div>
+
+          {
+            reqError &&
+            <article className="message is-danger">
+              <div className="message-header">
+                <p>{reqError[0]}</p>
+                <button className="delete" aria-label="delete" onClick={() => setError(null)}></button>
+              </div>
+              <div className="message-body">
+                {reqError[1]}
+              </div>
+            </article>
+          }
+        </div>
       </div>
     </div>
-  </div>;
+  );
 };
