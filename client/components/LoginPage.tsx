@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { onInput } from '../util';
 import Router from 'next/router';
@@ -29,6 +29,7 @@ function LoadingPanel() {
 export default function({ isLoading = false, error = null }) {
   if (isLoading) { return <LoadingPanel />; }
 
+  const isMounted = useRef(true);
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -93,15 +94,19 @@ export default function({ isLoading = false, error = null }) {
                 try {
                   const data = await onLogin(username, password);
 
-                  dispatch({ type: 'auth', client: data });
-                  
-                  setLoading(false);
-                  Router.push('/');
+                  if (isMounted) {
+                    dispatch({ type: 'auth', client: data });
+                    
+                    setLoading(false);
+                    Router.push('/');
+                  }
                 } 
                 catch(err) {
-                  const msg = err.response?.data?.message;
-                  setLoading(false);
-                  setError(msg ? [err.response.statusText ?? 'Error', msg] : ['Error', err.toString()]);
+                  if (isMounted) {
+                    const msg = err.response?.data?.message;
+                    setLoading(false);
+                    setError(msg ? [err.response.statusText ?? 'Error', msg] : ['Error', err.toString()]);
+                  }
                 }
               }}>Login</button>
             </div>

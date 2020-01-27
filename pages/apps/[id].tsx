@@ -62,17 +62,17 @@ export default withRedux(withAuth(function() {
     setWaiting(true);
     setWarning(null);
 
-    try {
-      await axios.post(`/api/apps/${id}`, { action, id: name });
-      await revalidate();
-    }
+    try { await axios.post(`/api/apps/${name}`, { action }); }
     catch (err) {
       if (isMounted) { 
         setWarning([err.response?.statusText ?? 'Error', err.response?.data?.message ?? err.toString()]); 
       }
     }
-
-    if (isMounted) { setWaiting(false); }
+    
+    if (isMounted) { 
+      await revalidate();
+      setWaiting(false); 
+    }
   };
 
   return (
