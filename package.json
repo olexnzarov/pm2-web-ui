@@ -24,7 +24,7 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.8.3",
-    "next": "^9.3.2",
+    "next": "^11.1.0",
     "next-session": "^2.1.1",
     "pm2": "^4.2.1",
     "react": "^16.12.0",
