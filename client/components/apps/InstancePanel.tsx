@@ -22,13 +22,15 @@ function LogsPanel(props) {
       <div className="field">
         <label className="label">Output Logs</label>
         <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
-          <textarea className="textarea" readOnly rows={15} value={data?.output} />
+          <textarea className="textarea" readOnly rows={15} value={data?.output.replace(
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')} />
         </div>
       </div>
       <div className="field">
         <label className="label">Error Logs</label>
         <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
-          <textarea className="textarea" readOnly rows={15} value={data?.error} />
+          <textarea className="textarea" readOnly rows={15} value={data?.error.replace(
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')} />
         </div>
       </div>
     </div>
