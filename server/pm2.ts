@@ -36,6 +36,25 @@ export const getApp = async (name): Promise<IApp> => {
 
 const getDescription = (pmId) => new Promise<IAppInstance[]>((resolve, reject) => pm.describe(pmId, (err, list: any) => err ? reject(err) : resolve(list)));
 
+export const deleteLogs = async (id) =>{
+  const [app] = await getDescription(id);
+
+  if (!app) { throw 'Application does not exist.'; }
+  const { pm_out_log_path, pm_err_log_path } = app.pm2_env;
+  try {
+    await fs.unlinkSync(pm_out_log_path);
+    await fs.unlinkSync(pm_err_log_path);
+  } catch(err){
+    if(err && err.code == 'ENOENT') {
+        throw Error("File doesn't exist, won't remove it.");
+    } else if (err) {
+        throw Error("Error occurred while trying to remove file");
+    }
+  }
+
+  return true
+}
+
 export const getLogs = async (pmId) => {
   const [app] = await getDescription(pmId);
 
@@ -45,8 +64,8 @@ export const getLogs = async (pmId) => {
 
   const response = {
     app,
-    output: pm_out_log_path ? await fs.readFileAsync(pm_out_log_path, 'utf8') : 'There is no log file provided.',
-    error: pm_err_log_path ? await fs.readFileAsync(pm_err_log_path, 'utf8') : 'There is no log file provided.',
+    output: pm_out_log_path ? await fs.readFileAsync(pm_out_log_path, 'utf8') : 'There is no log file provided. \nPlease try Restarting the application',
+    error: pm_err_log_path ? await fs.readFileAsync(pm_err_log_path, 'utf8') : 'There is no log file provided. \nPlease try Restarting the application',
   };
 
   return response;
