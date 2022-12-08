@@ -3,6 +3,20 @@
   <br>
 </h1>
 
+Troubleshooting build on node 16^
+Linux and macOS (Windows Git Bash)-
+```sh
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+Windows command prompt-
+```sh
+set NODE_OPTIONS=--openssl-legacy-provider
+```
+Windows PowerShell-
+```sh
+$env:NODE_OPTIONS = "--openssl-legacy-provider"
+```
+
 <h4 align="center">Modern <a href="https://github.com/Unitech/pm2" target="_blank">PM2</a> web interface built with <a href="https://github.com/zeit/next.js" target="_blank">next.js</a></h4>
 
 <p align="center">
