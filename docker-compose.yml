@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  mongodb:
+    image: mongo:4.4.18
+    container_name: pm2-monogdb
+    restart: always
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  pm2web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pm2-web-ui
+    environment:
+      SALT: example
+      MONGODB_URI: mongodb://root:example@mongodb/
+    ports:
+      - 3000:3000
+    depends_on:
+      mongodb:
+        condition: service_healthy
