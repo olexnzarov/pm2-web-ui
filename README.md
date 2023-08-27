@@ -1,3 +1,7 @@
+**This project was written a long time ago and is no longer maintained. It most certainly contains some security vulnerabilities and isn't ready for production. Consider using [PM2.io](https://pm2.io) monitoring instead.**
+
+---
+
 <h1 align="center">
   <a href="https://github.com/alexnzarov/pm2ui"><img src="https://github.com/alexnzarov/pm2-web-ui/raw/master/public/img/logo.png" alt="pm2-web-ui" width="200"></a>
   <br>
@@ -76,8 +80,3 @@ After you configured and started the server, user will be created with the follo
 ## License
 
 This project is distributed under the MIT license (see the LICENSE file in the project root). 
-
----
-
-> GitHub [@alexnzarov](https://github.com/alexnzarov) &nbsp;&middot;&nbsp;
-> Telegram [@alexnzarov](https://t.me/alexnzarov)
