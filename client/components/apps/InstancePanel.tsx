@@ -3,6 +3,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '../../../client/util';
 import ErrorDisplay from '../ErrorDisplay';
+import axios from "axios";
 
 const tabs = [
   { title: 'Monitoring', element: MonitoringTab },
@@ -11,6 +12,16 @@ const tabs = [
   { title: 'Logs', element: LogsPanel },
 ];
 
+async function deleteLogs(name,id){
+  try {
+    await axios.delete(`/api/apps/${name}/${id}/logs`)
+    alert("Please Restart the application")
+  } catch (error) {
+    if(error){
+      alert("There is an error upon doing the action, check the permission or file location")
+    }
+  }
+}
 function LogsPanel(props) {
   const { name, pm_id } = props.app as IAppInstance;
   const { data, error, isValidating } = useSWR(`/api/apps/${name}/${pm_id}/logs`, fetcher, { refreshInterval: 3000 });
@@ -21,6 +32,7 @@ function LogsPanel(props) {
     <div>
       <div className="field">
         <label className="label">Output Logs</label>
+        <button className="button is-danger" onClick={() => deleteLogs(name,pm_id)}>Reset All Logs</button>
         <div className={`control ${(!data || isValidating) ? 'is-loading' : ''}`}>
           <textarea className="textarea" readOnly rows={15} value={data?.output.replace(
     /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')} />
